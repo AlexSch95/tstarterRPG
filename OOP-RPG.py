@@ -129,7 +129,3 @@ while True:
 
     else:
         continue
-
-alex.display_stats()
-
-alex.fight(wolf)            #wolf wird übergeben als argument welcher gegner bekämpft wird, wolf ist ein objekt der klasse Enemy
