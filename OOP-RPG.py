@@ -14,12 +14,13 @@ class Weaponry:
         self.weapon_damage = weapon_damage
 
 class Enemy:
-    def __init__(self, enemy_name, enemy_hp):
+    def __init__(self, enemy_name, enemy_hp, enemy_bounty):
         self.enemy_name = enemy_name
         self.enemy_hp = enemy_hp
+        self.enemy_bounty = enemy_bounty
 
 class RpgCharacter:
-    def __init__(self, name, character_class, weapon, health_points, potion_count, character_level, experience):
+    def __init__(self, name, character_class, weapon, health_points, potion_count, character_level, experience, gold=0):
         self.maxhp = 100                                        #Max HP
         self.potion_power = 10                                  #wieviel heilt ein Trank
         self.potion_count = potion_count                        #wieviele Pots
@@ -29,6 +30,7 @@ class RpgCharacter:
         self.health_points = health_points                      #aktuelle HP
         self.character_level = character_level                  #aktuelles Level
         self.experience = experience                            #aktuelle EXP
+        self.gold = gold
 
     #Anzeigen der Stats
     def display_stats(self):
@@ -36,6 +38,7 @@ class RpgCharacter:
         print(f"Du hast {self.health_points}/{self.maxhp} Healthpoints")
         print(f"Du machst mit einem Hit mit der Waffe {self.weapon.weapon_name} {self.weapon.weapon_damage} Schaden")
         print(f"Du bist Level {self.character_level} mit {self.experience} Erfahrungspunkten")
+        print(f"Du besitzt aktuell {self.gold} Gold und {self.potion_count} Healthpotions")
 
     #Funktionsdefinitioon um einen Healpot zu benutzen
     def use_potion(self):
@@ -65,6 +68,8 @@ class RpgCharacter:
                 print(f"Der {enemy_id.enemy_name} hat nun {enemy_id.enemy_hp}HP")
                 if enemy_id.enemy_hp <= 0:
                     print(f"Du hast den {enemy_id.enemy_name} besiegt.")
+                    self.gold += enemy_id.enemy_bounty
+                    print(f"Du hebst {enemy_id.enemy_bounty} Gold auf")
                     break
             elif attack_y_n.upper() == "N":                                                                         #Kampf wird abgebrochen,
                 print(f"Du hast den Kampf abgebrochen, der {enemy_id.enemy_name} ist mit {enemy_id.enemy_hp}HP entkommen")
@@ -78,12 +83,12 @@ wand = Weaponry("Zauberstab", 5)
 comp_bow = Weaponry("Kompositbogen", 6)
 
 #Player Characters
-alex = RpgCharacter("Alex", "Magier", wand, 70, 1, 10, 95) #Objekt "Alex" wird als Character erstellt
-helen = RpgCharacter("Helen", "Bogenschützin", comp_bow, 50, 1, 15, 70)
+alex = RpgCharacter("Alex", "Magier", wand, 70, 1, 10, 95, 500) #Objekt "Alex" wird als Character erstellt
+helen = RpgCharacter("Helen", "Bogenschützin", comp_bow, 50, 1, 15, 70, 3)
 
 #Gegner
-goblin = Enemy("Goblin", 25)
-wolf = Enemy("Wolf", 18)
+goblin = Enemy("Goblin", 25, 10)
+wolf = Enemy("Wolf", 18, 7)
 
 #Liste der Gegner für nutzung von zufallsgegnerwahl
 enemy_list = [goblin, wolf]
@@ -103,7 +108,8 @@ while True:
     print("1. Characterstats ansehen")
     print("2. Healthpotion benutzen")
     print("3. Kämpfen")
-    print("4. Exit")
+    print("4. Tränke kaufen")
+    print("5. Exit")
     user_input = input("Bitte Auswahl eingeben:")
 
     if user_input == "1":
@@ -124,7 +130,34 @@ while True:
         if selected_character.lower() == "alex":
             alex.fight((random.choice(enemy_list)))
 
-    elif user_input == "Exit":
+    elif user_input == "4":
+        if selected_character.lower() == "helen":
+            print(f"Du hast aktuell {helen.gold} Gold.")
+            buy_amount = int(input("Wieviele Healthpotions möchtest du kaufen? Preis: 5 Gold pro Healthpotion: "))
+            if buy_amount > 0:
+                if helen.gold > (buy_amount * 5):
+                    helen.potion_count += buy_amount
+                    helen.gold -= buy_amount * 5
+                    print(f"Du hast {buy_amount} Healthpotions gekauft und dafür {buy_amount * 5} Gold ausgegeben.")
+                else:
+                    print(f"Das kannst du dir nicht leisten!")
+            else:
+                    print("Fehlerhafte eingabe, bitte eingabe überprüfen!")
+        if selected_character.lower() == "alex":
+            print(f"Du hast aktuell {alex.gold} Gold.")
+            buy_amount = int(input("Wieviele Healthpotions möchtest du kaufen? Preis: 5 Gold pro Healthpotion: "))
+            if buy_amount > 0:
+                if alex.gold > (buy_amount * 5):
+                    alex.potion_count += buy_amount
+                    alex.gold -= buy_amount * 5
+                    print(f"Du hast {buy_amount} Healthpotions gekauft und dafür {buy_amount * 5} Gold ausgegeben.")
+                else:
+                    print(f"Das kannst du dir nicht leisten!")
+            else:
+                print("Fehlerhafte eingabe, bitte eingabe überprüfen!")
+
+
+    elif user_input == "5":
         break
 
     else:
