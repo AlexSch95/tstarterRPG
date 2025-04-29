@@ -10,10 +10,12 @@ import random #random wird importiert um die Zufallsauswahl eines Gegners zu erm
 from classes import *
 
 #Waffen
+fists = Weaponry("Fäuste", 1)
 wand = Weaponry("Zauberstab", 5)
 comp_bow = Weaponry("Kompositbogen", 6)
 
 #Player Characters
+dummy = RpgCharacter("Dummy", "Dummy", fists, 100, 0, 1, 0, 0) #Dummy Character
 alex = RpgCharacter("Alex", "Magier", wand, 70, 1, 10, 95, 500) #Objekt "Alex" wird als Character erstellt
 helen = RpgCharacter("Helen", "Bogenschützin", comp_bow, 50, 1, 15, 70, 3)
 
@@ -23,70 +25,41 @@ wolf = Enemy("Wolf", 18, 7)
 
 #Liste der Gegner für nutzung von zufallsgegnerwahl
 enemy_list = [goblin, wolf]
+playable_characters = {"alex": alex,
+                       "helen": helen}
 
 #Funktionsaufrufe mit Menü
 while True:
-    selected_character = input("Character auswählen (aktuell nur Alex oder Helen):")
-    if selected_character.lower() == "helen" or "alex":
-        print(f"Willkommen {selected_character.title()} im Techstarter RPG ")
+    selected_character = dummy
+    user_char_choice = input("Character auswählen (aktuell nur Alex oder Helen):").lower()
+    if user_char_choice.lower() in playable_characters:
+        selected_character = playable_characters[user_char_choice]
+        print(f"Willkommen {user_char_choice.title()} im Techstarter RPG")
         break
     else:
         continue
 
 
 while True:
-    print("Was möchtest du tun?")
+    print(f"{selected_character.name}, was möchtest du tun?")
     print("1. Characterstats ansehen")
     print("2. Healthpotion benutzen")
     print("3. Kämpfen")
     print("4. Tränke kaufen")
     print("5. Exit")
-    user_input = input("Bitte Auswahl eingeben:")
+    user_input = input("Bitte Auswahl eingeben: ")
 
     if user_input == "1":
-        if selected_character.lower() == "helen":
-            helen.display_stats()
-        elif selected_character.lower() == "alex":
-            alex.display_stats()
+        selected_character.display_stats()
 
     elif user_input == "2":
-        if selected_character.lower() == "helen":
-            helen.use_potion()
-        if selected_character.lower() == "alex":
-            alex.use_potion()
+        selected_character.use_potion()
 
     elif user_input == "3":
-        if selected_character.lower() == "helen":
-            helen.fight((random.choice(enemy_list)))
-        if selected_character.lower() == "alex":
-            alex.fight((random.choice(enemy_list)))
+        selected_character.fight(random.choice(enemy_list))
 
     elif user_input == "4":
-        if selected_character.lower() == "helen":
-            print(f"Du hast aktuell {helen.gold} Gold.")
-            buy_amount = int(input("Wieviele Healthpotions möchtest du kaufen? Preis: 5 Gold pro Healthpotion: "))
-            if buy_amount > 0:
-                if helen.gold > (buy_amount * 5):
-                    helen.potion_count += buy_amount
-                    helen.gold -= buy_amount * 5
-                    print(f"Du hast {buy_amount} Healthpotions gekauft und dafür {buy_amount * 5} Gold ausgegeben.")
-                else:
-                    print(f"Das kannst du dir nicht leisten!")
-            else:
-                    print("Fehlerhafte eingabe, bitte eingabe überprüfen!")
-        if selected_character.lower() == "alex":
-            print(f"Du hast aktuell {alex.gold} Gold.")
-            buy_amount = int(input("Wieviele Healthpotions möchtest du kaufen? Preis: 5 Gold pro Healthpotion: "))
-            if buy_amount > 0:
-                if alex.gold > (buy_amount * 5):
-                    alex.potion_count += buy_amount
-                    alex.gold -= buy_amount * 5
-                    print(f"Du hast {buy_amount} Healthpotions gekauft und dafür {buy_amount * 5} Gold ausgegeben.")
-                else:
-                    print(f"Das kannst du dir nicht leisten!")
-            else:
-                print("Fehlerhafte eingabe, bitte eingabe überprüfen!")
-
+        selected_character.buy_potion()
 
     elif user_input == "5":
         break

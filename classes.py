@@ -67,3 +67,15 @@ class RpgCharacter:
             else:
                 continue                                    #falls etwas anderes als j oder n eingegeben wird, wird erneut nach der eingabe gefragt
 
+    def buy_potion(self):
+        print(f"Du hast aktuell {self.gold} Gold.")
+        buy_amount = int(input("Wieviele Healthpotions möchtest du kaufen? Preis: 5 Gold pro Healthpotion: "))
+        if buy_amount > 0:
+            if self.gold > (buy_amount * 5):
+                self.potion_count += buy_amount
+                self.gold -= buy_amount * 5
+                print(f"Du hast {buy_amount} Healthpotions gekauft und dafür {buy_amount * 5} Gold ausgegeben.")
+            else:
+                print(f"Das kannst du dir nicht leisten!")
+        else:
+            print("Fehlerhafte eingabe, bitte Eingabe überprüfen!")
