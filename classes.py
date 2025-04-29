@@ -24,11 +24,13 @@ class RpgCharacter:
 
     #Anzeigen der Stats
     def display_stats(self):
-        print(f"Dein Charakter {self.name} ist ein {self.character_class}.")
-        print(f"Du hast {self.health_points}/{self.maxhp} Healthpoints")
-        print(f"Du machst mit einem Hit mit der Waffe {self.weapon.weapon_name} {self.weapon.weapon_damage} Schaden")
-        print(f"Du bist Level {self.character_level} mit {self.experience} Erfahrungspunkten")
-        print(f"Du besitzt aktuell {self.gold} Gold und {self.potion_count} Healthpotions")
+        print(f"Charaktername: {self.name}")
+        print(f"Klasse: {self.character_class}")
+        print(f"HP: {self.health_points}/{self.maxhp}")
+        print(f"Healthpotions: {self.potion_count} Stück")
+        print(f"Characterlevel: {self.character_level} ({self.experience}/100 EXP)")
+        print(f"Gold: {self.gold}")
+        print()
 
     #Funktionsdefinitioon um einen Healpot zu benutzen
     def use_potion(self):
@@ -39,13 +41,29 @@ class RpgCharacter:
                 self.potion_count -= 1
                 print(f"Du hast ein Healthpotion konsumiert. Deine Healthpoints betragen jetzt {self.health_points}/{self.maxhp}. Dabei hast du {over_heal}HP verschwendet")
                 print(f"{self.potion_count} Healthpotions verbleibend")
+                print()
             else:
                 self.health_points += self.potion_power
                 self.potion_count -= 1
                 print(f"Du hast ein Healthpotion benutzt. Deine Healthpoints betragen jetzt {self.health_points}/{self.maxhp}.")
                 print(f"{self.potion_count} Healthpotions verbleibend")
+                print()
         else:
             print("Du kannst dich nicht heilen da du keine Healthpotions mehr hast.")
+            while True:
+                potion_shop_shortcut = input("Möchtest du zum Shop wechseln? (J/N)")
+                if potion_shop_shortcut.upper() == "J":
+                    self.buy_potion()
+                    break
+                elif potion_shop_shortcut.upper() == "N":
+                    print("Kehre zurück zum Hauptmenü")
+                    break
+                else:
+                    continue
+
+
+
+
 
     #Funktionsdefinition für die Kampffunktion
     def fight(self, enemy_id):
@@ -60,9 +78,11 @@ class RpgCharacter:
                     print(f"Du hast den {enemy_id.enemy_name} besiegt.")
                     self.gold += enemy_id.enemy_bounty
                     print(f"Du hebst {enemy_id.enemy_bounty} Gold auf")
+                    print()
                     break
             elif attack_y_n.upper() == "N":                                #Kampf wird abgebrochen,
                 print(f"Du hast den Kampf abgebrochen, der {enemy_id.enemy_name} ist mit {enemy_id.enemy_hp}HP entkommen")
+                print()
                 break
             else:
                 continue                                    #falls etwas anderes als j oder n eingegeben wird, wird erneut nach der eingabe gefragt
@@ -75,7 +95,10 @@ class RpgCharacter:
                 self.potion_count += buy_amount     #pots im besitz + gekaufte menge
                 self.gold -= buy_amount * 5         #gold im besitz - preis der gekauften pots
                 print(f"Du hast {buy_amount} Healthpotions gekauft und dafür {buy_amount * 5} Gold ausgegeben.")
+                print()
             else:
-                print(f"Das kannst du dir nicht leisten!")          #wenn das gold nicht ausreicht
+                print(f"Das kannst du dir nicht leisten!")
+                print()    #wenn das gold nicht ausreicht
         else:
             print("Fehlerhafte eingabe, bitte Eingabe überprüfen!")     #bei einer ungültigen eingabe zb. abcdefg
+            print()
