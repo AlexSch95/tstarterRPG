@@ -33,7 +33,7 @@ while True:
     selected_character = dummy
     user_char_choice = input("Character auswählen (aktuell nur Alex oder Helen):").lower()
     if user_char_choice.lower() in playable_characters:
-        selected_character = playable_characters[user_char_choice]
+        selected_character = playable_characters[user_char_choice]       #der passende value zu dem key der durch input in die variable user_char_choice geladen wurde als selected_character gesetzt
         print(f"Willkommen {user_char_choice.title()} im Techstarter RPG")
         break
     else:

@@ -61,21 +61,21 @@ class RpgCharacter:
                     self.gold += enemy_id.enemy_bounty
                     print(f"Du hebst {enemy_id.enemy_bounty} Gold auf")
                     break
-            elif attack_y_n.upper() == "N":                                                                         #Kampf wird abgebrochen,
+            elif attack_y_n.upper() == "N":                                #Kampf wird abgebrochen,
                 print(f"Du hast den Kampf abgebrochen, der {enemy_id.enemy_name} ist mit {enemy_id.enemy_hp}HP entkommen")
                 break
             else:
                 continue                                    #falls etwas anderes als j oder n eingegeben wird, wird erneut nach der eingabe gefragt
 
     def buy_potion(self):
-        print(f"Du hast aktuell {self.gold} Gold.")
+        print(f"Du hast aktuell {self.gold} Gold.")             #ausgabe vom Gold
         buy_amount = int(input("Wieviele Healthpotions möchtest du kaufen? Preis: 5 Gold pro Healthpotion: "))
-        if buy_amount > 0:
-            if self.gold > (buy_amount * 5):
-                self.potion_count += buy_amount
-                self.gold -= buy_amount * 5
+        if buy_amount > 0:                  #man darf nicht weniger als 0 kaufen
+            if self.gold > (buy_amount * 5):        # gold darf nicht weniger sein als die anzahl der pots * 5 (preis für einen pot)
+                self.potion_count += buy_amount     #pots im besitz + gekaufte menge
+                self.gold -= buy_amount * 5         #gold im besitz - preis der gekauften pots
                 print(f"Du hast {buy_amount} Healthpotions gekauft und dafür {buy_amount * 5} Gold ausgegeben.")
             else:
-                print(f"Das kannst du dir nicht leisten!")
+                print(f"Das kannst du dir nicht leisten!")          #wenn das gold nicht ausreicht
         else:
-            print("Fehlerhafte eingabe, bitte Eingabe überprüfen!")
+            print("Fehlerhafte eingabe, bitte Eingabe überprüfen!")     #bei einer ungültigen eingabe zb. abcdefg
