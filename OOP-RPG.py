@@ -14,40 +14,73 @@ fists = Weaponry("Fäuste", 1)
 wand = Weaponry("Zauberstab", 5)
 comp_bow = Weaponry("Kompositbogen", 6)
 
-#Player Characters
+#Objektinstanzierung Spielercharaktäre
 dummy = RpgCharacter("Dummy", "Dummy", fists, 100, 0, 1, 0, 0) #Dummy Character
-alex = RpgCharacter("Alex", "Magier", wand, 70, 1, 10, 95, 500) #Objekt "Alex" wird als Character erstellt
-helen = RpgCharacter("Helen", "Bogenschützin", comp_bow, 50, 1, 15, 70, 3)
+mage = RpgCharacter("Gandalf", "Zauberer", wand, 1, 0, 1, 0, 100)
+ranger = RpgCharacter("Legolas", "Bogenschütze", comp_bow, 100, 0, 1, 0, 100)
+gollum = RpgCharacter("Smeagol", "Hobbit", 100, 100, 0,1,0,100 )
 
-#Gegner
-goblin = Enemy("Goblin", 25, 10)
-wolf = Enemy("Wolf", 18, 7)
 
-#Liste der Gegner für nutzung von zufallsgegnerwahl
-enemy_list = [goblin, wolf]
-playable_characters = {"alex": alex,
-                       "helen": helen}
+#Objektinstanzierung Gegner
+goblin = Enemy("Goblin", 25, 25, 3, 10)
+wolf = Enemy("Wolf", 18, 18, 5, 7)
+rat = Enemy("Ratte", 10, 10, 3, 2)
+troll = Enemy("Bergtroll", 40, 40, 4, 15)
+bats = Enemy("Schwarm Fledermäuse", 20, 20, 2, 12)
+orc = Enemy("Ork", 25, 25, 8, 14)
+
+
+"""Listen der bekämpfbaren Gegner 
+(diese werden automatisch aus dem
+speicher heraus erstellt und deren Speicheradressen werden als Werte in eine Liste gepackt"""
+
+enemy_list = []
+
+for enemy in dir():
+    if isinstance(locals()[enemy], Enemy):
+        enemy = eval(enemy)
+        enemy_list.append(enemy)
+
+"""Ähnlich wie bei der Liste der Gegner werden hier alle Spielercharaktäre in ein Dictionary geladen
+im Dictionary wird die Objekteigenschaft "name" als Schlüssel verwendet und die Adresse im Speicher als Key
+um nachfolgend dann zu überprüfen ob der gewählte charakter ein objekt der klasse RpgCharacters ist"""
+
+character_dictionary = {}
+
+for character in dir():
+    if isinstance(globals()[character], RpgCharacter):
+        character = eval(character)
+        character_dictionary[character.name] = character
+
+print(character_dictionary)
+print(enemy_list)
 
 #Funktionsaufrufe mit Menü
 while True:
     selected_character = dummy
-    user_char_choice = input("Character auswählen (aktuell nur Alex oder Helen):").lower()
-    if user_char_choice.lower() in playable_characters:
-        selected_character = playable_characters[user_char_choice]       #der passende value zu dem key der durch input in die variable user_char_choice geladen wurde als selected_character gesetzt
-        print(f"Willkommen {user_char_choice.title()} im Techstarter RPG")
+    user_char_choice = input("Klasse auswählen (aktuell Gandalf oder Legolas): ").title()
+    if user_char_choice.title() in character_dictionary:
+        selected_character = character_dictionary[user_char_choice]       #der passende value zu dem key der durch input in die variable user_char_choice geladen wurde als selected_character gesetzt
+        print(f"Willkommen {user_char_choice.title()}")
         break
     else:
         continue
 
 
 while True:
+    if selected_character.health_points <= 0:
+        selected_character.health_points = 1
+        print("Willkommen zurück im Lager, du wurdest wiederbelebt und deine Lebenspunkte wurden auf 1 gesetzt.")
+    print()
     print(f"{selected_character.name}, was möchtest du tun?")
     print("1. Characterstats ansehen")
     print("2. Healthpotion benutzen")
-    print("3. Kämpfen")
-    print("4. Tränke kaufen")
-    print("5. Exit")
+    print("3. Zufälligen Gegner bekämpfen")
+    print("4. Wave-Defense")
+    print("5. Tränke kaufen")
+    print("6. Exit")
     user_input = input("Bitte Auswahl eingeben: ")
+    print()
 
     if user_input == "1":
         selected_character.display_stats()
@@ -56,12 +89,32 @@ while True:
         selected_character.use_potion()
 
     elif user_input == "3":
-        selected_character.fight(random.choice(enemy_list))
+        selected_character.random_fight(random.choice(enemy_list))
 
     elif user_input == "4":
-        selected_character.buy_potion()
+        while True:
+            print("Wieviele Wellen möchtest du bekämpfen? Abbrechen bringt dich zurück zum Menü")
+            wave_count = input("Wellen: ")
+            if wave_count.isnumeric() == True:
+                wave_count = int(wave_count)
+                success_lose = selected_character.wave_defense(wave_count, enemy_list)
+                if success_lose == "Gestorben":
+                    break
+                else:
+                    continue
+            elif wave_count.lower() == "abbrechen":
+                break
+            else:
+                continue
+
+
+
+
 
     elif user_input == "5":
+        selected_character.buy_potion()
+
+    elif user_input == "6":
         break
 
     else:
