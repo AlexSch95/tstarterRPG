@@ -9,28 +9,47 @@ falls hier irgendwas gänzlich Falsch gemacht wird bitte bescheidsagen :D - funk
 import random #random wird importiert um die Zufallsauswahl eines Gegners zu ermöglichen
 import sqlite3
 from classes import *
-chosen_character = None
 
 
-
-def login(user_char_choice):
+def load_char(user_char_choice):
     try:
         # Verbindung zur Datenbank herstellen
         conn = sqlite3.connect('rpg.db')
         cursor = conn.cursor()
-
+        # Laden aus der SQLite DB 'rpg.db'
         cursor.execute(f"""SELECT username, name, character_class, weapon, health_points, potion_count, 
         character_level, experience, gold FROM characters WHERE username = '{user_char_choice}'""")     #Datensatz des gewählten Users über SQL abfragen
         fetched_character = cursor.fetchone()               #fetchen des DB Datensatzes und schreiben als tupel in eine variable
         username, name, character_class, weapon, health_points, potion_count, character_level, experience, gold = fetched_character  # tupel in variablen laden
         cursor.execute(f"""SELECT weapon_name, weapon_damage FROM weapons WHERE ID = '{weapon}'""")     #Datensatz der Waffe des gewählten Characters
         fetched_weapon = cursor.fetchone()                  #fetchen des DB Datensatzes und schreiben als tupel in eine variable
+        #Schliessen der Verbindung zur DB
+        conn.close()
+
         weapon_name, weapon_damage = fetched_weapon         #tupel in variablen laden
         weapon = Weaponry(weapon_name, weapon_damage)       #objektinstanzierung der Waffe
         character = RpgCharacter(name, character_class, weapon, health_points, potion_count, character_level, experience, gold) # objektinstanzierung des Characters
+
         return character
     except:
         return f"Falscher Charactername... Bitte erneut versuchen."
+
+def save_char(character):
+    try:
+        conn = sqlite3.connect('rpg.db')
+        cursor = conn.cursor()
+        cursor.execute(f"""UPDATE characters
+            SET health_points = {character.health_points},
+            potion_count = {character.potion_count},
+            character_level = {character.character_level},
+            experience = {character.experience},
+            gold = {character.gold}
+            WHERE name = '{character.name}';""")
+        conn.commit()
+        conn.close()
+        return f"Automatisches speichern...\nFortschritt erfolgreich gespeichert!"
+    except:
+        return f"Fehler beim Speichern"
 
 
 #Waffen
@@ -72,7 +91,7 @@ um nachfolgend dann zu überprüfen ob der gewählte charakter ein objekt der kl
 #Funktionsaufrufe mit Menü
 while True:
     user_char_choice = input("Klasse auswählen (aktuell Gandalf oder Legolas): ").title()
-    character = login(user_char_choice)
+    character = load_char(user_char_choice)
     if isinstance(character, RpgCharacter) == True:
         print(f"Willkommen {character.name}")
         break
@@ -102,9 +121,13 @@ while True:
 
     elif user_input == "2":
         character.use_potion()
+        saving = save_char(character)
+        print(saving)
 
     elif user_input == "3":
         character.random_fight(random.choice(enemy_list))
+        saving = save_char(character)
+        print(saving)
 
     elif user_input == "4":
         while True:
@@ -113,6 +136,8 @@ while True:
             if wave_count.isnumeric() == True:
                 wave_count = int(wave_count)
                 success_lose = character.wave_defense(wave_count, enemy_list)
+                saving = save_char(character)
+                print(saving)
                 if success_lose == "Gestorben":
                     break
                 else:
@@ -124,10 +149,12 @@ while True:
 
     elif user_input == "5":
         character.buy_potion()
+        saving = save_char(character)
+        print(saving)
 
     elif user_input == "6":
-        conn.commit()
-        conn.close()
+        saving = save_char(character)
+        print(saving)
         break
 
     else:
