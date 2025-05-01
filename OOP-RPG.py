@@ -7,19 +7,42 @@ den Waffenschaden aus der Klasse Weaponry laden
 falls hier irgendwas gänzlich Falsch gemacht wird bitte bescheidsagen :D - funktionieren tuts aufjedenfall soweit ich getestet hab, hab das ganze auch noch ein bisschen mit kommentaren versehen
 """
 import random #random wird importiert um die Zufallsauswahl eines Gegners zu ermöglichen
+import sqlite3
 from classes import *
+chosen_character = None
+
+
+
+def login(user_char_choice):
+    try:
+        # Verbindung zur Datenbank herstellen
+        conn = sqlite3.connect('rpg.db')
+        cursor = conn.cursor()
+
+        cursor.execute(f"""SELECT username, name, character_class, weapon, health_points, potion_count, 
+        character_level, experience, gold FROM characters WHERE username = '{user_char_choice}'""")     #Datensatz des gewählten Users über SQL abfragen
+        fetched_character = cursor.fetchone()               #fetchen des DB Datensatzes und schreiben als tupel in eine variable
+        username, name, character_class, weapon, health_points, potion_count, character_level, experience, gold = fetched_character  # tupel in variablen laden
+        cursor.execute(f"""SELECT weapon_name, weapon_damage FROM weapons WHERE ID = '{weapon}'""")     #Datensatz der Waffe des gewählten Characters
+        fetched_weapon = cursor.fetchone()                  #fetchen des DB Datensatzes und schreiben als tupel in eine variable
+        weapon_name, weapon_damage = fetched_weapon         #tupel in variablen laden
+        weapon = Weaponry(weapon_name, weapon_damage)       #objektinstanzierung der Waffe
+        character = RpgCharacter(name, character_class, weapon, health_points, potion_count, character_level, experience, gold) # objektinstanzierung des Characters
+        return character
+    except:
+        return f"Falscher Charactername... Bitte erneut versuchen."
+
 
 #Waffen
-fists = Weaponry("Fäuste", 1)
-wand = Weaponry("Zauberstab", 5)
-comp_bow = Weaponry("Kompositbogen", 6)
+#fists = Weaponry("Fäuste", 1)
+#wand = Weaponry("Zauberstab", 5)
+#comp_bow = Weaponry("Kompositbogen", 6)
 
 #Objektinstanzierung Spielercharaktäre
-dummy = RpgCharacter("Dummy", "Dummy", fists, 100, 0, 1, 0, 0) #Dummy Character
-mage = RpgCharacter("Gandalf", "Zauberer", wand, 1, 0, 1, 0, 100)
-ranger = RpgCharacter("Legolas", "Bogenschütze", comp_bow, 100, 0, 1, 0, 100)
-gollum = RpgCharacter("Smeagol", "Hobbit", 100, 100, 0,1,0,100 )
-
+#dummy = RpgCharacter("Dummy", "Dummy", fists, 100, 0, 1, 0, 0) #Dummy Character
+#mage = RpgCharacter("Gandalf", "Zauberer", wand, 1, 0, 1, 0, 100)
+#ranger = RpgCharacter("Legolas", "Bogenschütze", comp_bow, 100, 0, 1, 0, 100)
+#gollum = RpgCharacter("Smeagol", "Hobbit", fists, 100, 1, 0,1,100 )
 
 #Objektinstanzierung Gegner
 goblin = Enemy("Goblin", 25, 25, 3, 10)
@@ -45,34 +68,26 @@ for enemy in dir():
 im Dictionary wird die Objekteigenschaft "name" als Schlüssel verwendet und die Adresse im Speicher als Key
 um nachfolgend dann zu überprüfen ob der gewählte charakter ein objekt der klasse RpgCharacters ist"""
 
-character_dictionary = {}
-
-for character in dir():
-    if isinstance(globals()[character], RpgCharacter):
-        character = eval(character)
-        character_dictionary[character.name] = character
-
-print(character_dictionary)
-print(enemy_list)
 
 #Funktionsaufrufe mit Menü
 while True:
-    selected_character = dummy
     user_char_choice = input("Klasse auswählen (aktuell Gandalf oder Legolas): ").title()
-    if user_char_choice.title() in character_dictionary:
-        selected_character = character_dictionary[user_char_choice]       #der passende value zu dem key der durch input in die variable user_char_choice geladen wurde als selected_character gesetzt
-        print(f"Willkommen {user_char_choice.title()}")
+    character = login(user_char_choice)
+    if isinstance(character, RpgCharacter) == True:
+        print(f"Willkommen {character.name}")
         break
-    else:
+    elif character == f"Falscher Charactername... Bitte erneut versuchen.":
+        print(character)
         continue
 
 
+
 while True:
-    if selected_character.health_points <= 0:
-        selected_character.health_points = 1
+    if character.health_points <= 0:
+        character.health_points = 1
         print("Willkommen zurück im Lager, du wurdest wiederbelebt und deine Lebenspunkte wurden auf 1 gesetzt.")
     print()
-    print(f"{selected_character.name}, was möchtest du tun?")
+    print(f"{character.name}, was möchtest du tun?")
     print("1. Characterstats ansehen")
     print("2. Healthpotion benutzen")
     print("3. Zufälligen Gegner bekämpfen")
@@ -83,13 +98,13 @@ while True:
     print()
 
     if user_input == "1":
-        selected_character.display_stats()
+        character.display_stats()
 
     elif user_input == "2":
-        selected_character.use_potion()
+        character.use_potion()
 
     elif user_input == "3":
-        selected_character.random_fight(random.choice(enemy_list))
+        character.random_fight(random.choice(enemy_list))
 
     elif user_input == "4":
         while True:
@@ -97,7 +112,7 @@ while True:
             wave_count = input("Wellen: ")
             if wave_count.isnumeric() == True:
                 wave_count = int(wave_count)
-                success_lose = selected_character.wave_defense(wave_count, enemy_list)
+                success_lose = character.wave_defense(wave_count, enemy_list)
                 if success_lose == "Gestorben":
                     break
                 else:
@@ -107,14 +122,12 @@ while True:
             else:
                 continue
 
-
-
-
-
     elif user_input == "5":
-        selected_character.buy_potion()
+        character.buy_potion()
 
     elif user_input == "6":
+        conn.commit()
+        conn.close()
         break
 
     else:
