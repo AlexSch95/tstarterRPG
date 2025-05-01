@@ -1,5 +1,5 @@
 
-![enter image description here](https://i.imgur.com/qNSTKLG.jpeg)
+![AI generated Pixelart from chatgpt](https://i.imgur.com/lbz1ZfI.jpeg)
 
 Ein Textbasiertes RPG basierend auf Objektorientierter Programmierung in Python zu Übungs- und Lernzwecken während der Schulung beim deutschen Bildungsträger [Techstarter](https://techstarter.de/) 
 
