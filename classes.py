@@ -31,6 +31,7 @@ class RpgCharacter:
         print(f"Charaktername: {self.name}")
         print(f"Klasse: {self.character_class}")
         print(f"HP: {self.health_points}/{self.maxhp}")
+        print(f"Waffe: {self.weapon.weapon_name} ({self.weapon.weapon_damage} Schaden)")
         print(f"Healthpotions: {self.potion_count} Stück")
         print(f"Characterlevel: {self.character_level} ({self.experience}/100 EXP)")
         print(f"Gold: {self.gold}")

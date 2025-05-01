@@ -90,7 +90,7 @@ um nachfolgend dann zu überprüfen ob der gewählte charakter ein objekt der kl
 
 #Funktionsaufrufe mit Menü
 while True:
-    user_char_choice = input("Klasse auswählen (aktuell Gandalf oder Legolas): ").title()
+    user_char_choice = input("Charakter auswählen (Gundolf, Duplolas oder Schimmli): ").title()
     character = load_char(user_char_choice)
     if isinstance(character, RpgCharacter) == True:
         print(f"Willkommen {character.name}")
@@ -112,7 +112,7 @@ while True:
     print("3. Zufälligen Gegner bekämpfen")
     print("4. Wave-Defense")
     print("5. Tränke kaufen")
-    print("6. Exit")
+    print("6. Exit (Speichert automatisch)")
     user_input = input("Bitte Auswahl eingeben: ")
     print()
 
