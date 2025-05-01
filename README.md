@@ -1,3 +1,4 @@
+![enter image description here](https://i.imgur.com/qNSTKLG.jpeg)
 
 Ein Textbasiertes RPG basierend auf Objektorientierter Programmierung in Python
 
