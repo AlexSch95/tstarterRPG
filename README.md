@@ -1,6 +1,7 @@
+
 ![enter image description here](https://i.imgur.com/qNSTKLG.jpeg)
 
-Ein Textbasiertes RPG basierend auf Objektorientierter Programmierung in Python
+Ein Textbasiertes RPG basierend auf Objektorientierter Programmierung in Python zu Übungs- und Lernzwecken während der Schulung beim deutschen Bildungsträger [Techstarter](https://techstarter.de/) 
 
 ## **Features:**
 
