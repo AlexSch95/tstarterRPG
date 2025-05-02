@@ -1,5 +1,73 @@
 import random
+import sqlite3
 
+"""Datenbankfunktionen um
+Charaktäre zu laden
+Gegner zu laden und in eine Liste zu zu schreiben
+Speichern des Fortschritts"""
+def load_char(user_char_choice):
+    try:
+        # Verbindung zur Datenbank herstellen
+        conn = sqlite3.connect('rpg.db')
+        cursor = conn.cursor()
+        # Laden aus der SQLite DB 'rpg.db'
+        cursor.execute(f"""SELECT username, name, character_class, weapon, health_points, potion_count, 
+        character_level, experience, gold FROM characters WHERE username = '{user_char_choice}'""")     #Datensatz des gewählten Users über SQL abfragen
+        fetched_character = cursor.fetchone()               #fetchen des DB Datensatzes und schreiben als tupel in eine variable
+        username, name, character_class, weapon, health_points, potion_count, character_level, experience, gold = fetched_character  # tupel in variablen laden
+        cursor.execute(f"""SELECT weapon_name, weapon_damage FROM weapons WHERE ID = '{weapon}'""")     #Datensatz der Waffe des gewählten Characters
+        fetched_weapon = cursor.fetchone()        #fetchen des DB Datensatzes und schreiben als tupel in eine variable
+
+        #Schliessen der Verbindung zur DB
+        conn.close()
+
+        weapon_name, weapon_damage = fetched_weapon         #tupel in variablen laden
+        weapon = Weaponry(weapon_name, weapon_damage)       #objektinstanzierung der Waffe
+        character = RpgCharacter(name, character_class, weapon, health_points, potion_count, character_level, experience, gold) # objektinstanzierung des Characters
+
+        return character
+    except:
+        return f"Falscher Charactername... Bitte erneut versuchen."
+
+def save_char(character):
+    try:
+        conn = sqlite3.connect('rpg.db')
+        cursor = conn.cursor()
+        cursor.execute(f"""UPDATE characters
+            SET health_points = {character.health_points},
+            potion_count = {character.potion_count},
+            character_level = {character.character_level},
+            experience = {character.experience},
+            gold = {character.gold}
+            WHERE name = '{character.name}';""")      # Aktuelle Werte vom Speicher in die Datenbank schreiben
+        conn.commit()
+        conn.close()
+        return f"Automatisches speichern...\nFortschritt erfolgreich gespeichert!"
+    except:
+        return f"Fehler beim Speichern"
+
+def load_enemies():
+    try:
+        enemy_list = []
+        conn = sqlite3.connect('rpg.db')
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT enemy_name, enemy_hp, enemy_maxhp, enemy_damage, enemy_bounty FROM enemies""")
+        fetched_enemies = cursor.fetchall()
+        for row in fetched_enemies:
+            enemy_name, enemy_hp, enemy_maxhp, enemy_damage, enemy_bounty = row
+            enemy_obj_creator = Enemy(enemy_name, enemy_hp, enemy_maxhp, enemy_damage, enemy_bounty)
+            enemy_list.append(enemy_obj_creator)  #für die Gegnerliste zur Randomauswahl der Gegner
+
+        conn.close()
+        return enemy_list  #schickt die Liste zurück damit sie im Hauptprogramm weiter verwendet werden kann
+    except:
+        print("Fehler beim Laden der Gegner")
+
+
+"""Anfang der Klassendefinitionen für
+Waffen
+Charaktäre
+Gegner"""
 class Weaponry:
     def __init__(self, weapon_name, weapon_damage):
         self.weapon_name = weapon_name
